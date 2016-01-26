@@ -1,7 +1,7 @@
 import numpy as np
 
 def grand_index(U, V, adjusted=False):
-    Ju, Su, Tu = _calculate_information_arrays(U)    
+    Ju, Su, Tu = _calculate_information_arrays(U)
     Jv, Sv, Tv = _calculate_information_arrays(V)
     Tmax = max(np.sum(Tu), np.sum(Tv))
     gri = _calculate_gri(Ju, Su, Jv, Sv, Tmax)
@@ -30,4 +30,15 @@ def _calculate_gri_expectation(Ju, Su, Jv, Sv, Tmax):
     return (a_expectation + d_expectation) / Tmax
 
 def _calculate_expectation(Ju, Jv):
-    return 0.0
+    x, y = np.sort(Ju), np.sort(Jv)
+    expectation = 0.0
+    
+    for n in reversed(x):
+        count = np.count_nonzero(n <= y)
+        expectation += count * n
+    
+    for n in reversed(y):
+        count = np.count_nonzero(n < x)
+        expectation += count * n
+    
+    return expectation / len(Ju)
