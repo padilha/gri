@@ -1,6 +1,33 @@
 import numpy as np
 
 def grand_index(U, V, adjusted=False):
+    """
+    Grand Index (13GRI) and Adjusted Grand Index (13AGRI) implementations.
+    
+    These measures are capable of comparing exclusive hard, fuzzy/probabilistic,
+    non-exclusive hard, and possibilistic clusterings.
+    
+    Parameters
+    ----------
+    U : numpy.ndarray
+        k x n matrix representing a clustering solution with k clusters on a dataset
+        with n objects. U[r, i] expresses the membership degree of the object i to
+        the rth cluster.
+    
+    V : numpy.ndarray
+        l x n matrix representing a clustering solution with l clusters on a dataset
+        with n objects. V[r, i] expresses the membership degree of the object i to
+        the rth cluster.
+    
+    adjusted : bool, default: False
+        If True, calculates 13AGRI. Otherwise, calculates 13GRI.
+    
+    Returns
+    -------
+    gri : float
+        Similarity score of U and V. A score of 1 represents a perfect match.
+        If adjusted is True, random solutions have a score close to 0.
+    """
     Ju, Su, Tu = _calculate_information_arrays(U)
     Jv, Sv, Tv = _calculate_information_arrays(V)
     Tmax = max(np.sum(Tu), np.sum(Tv))
