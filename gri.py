@@ -7,6 +7,11 @@ def grand_index(U, V, adjusted=False):
     These measures are capable of comparing exclusive hard, fuzzy/probabilistic,
     non-exclusive hard, and possibilistic clusterings.
     
+    Reference
+    ---------
+    Horta, D., and Campello, R. J. G. B. (2015). Comparing Hard and Overlapping Clusterings.
+    Journal of Machine Learning Research, 16: 2949-2997.
+    
     Parameters
     ----------
     U : numpy.ndarray
