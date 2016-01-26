@@ -15,12 +15,12 @@ def grand_index(U, V, adjusted=False):
     Parameters
     ----------
     U : numpy.ndarray
-        k x n matrix representing a clustering solution with k clusters on a dataset
+        k x n matrix representing a clustering solution with k clusters for a dataset
         with n objects. U[r, i] expresses the membership degree of the object i to
         the rth cluster.
     
     V : numpy.ndarray
-        l x n matrix representing a clustering solution with l clusters on a dataset
+        l x n matrix representing a clustering solution with l clusters for a dataset
         with n objects. V[r, i] expresses the membership degree of the object i to
         the rth cluster.
     
