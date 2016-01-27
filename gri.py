@@ -16,12 +16,12 @@ def grand_index(U, V, adjusted=False):
     ----------
     U : numpy.ndarray
         k x n matrix representing a clustering solution with k clusters for a dataset
-        with n objects. U[r, i] expresses the membership degree of the object i to
+        with n objects. U[r, i] expresses the membership degree of the ith object to
         the rth cluster.
     
     V : numpy.ndarray
         l x n matrix representing a clustering solution with l clusters for a dataset
-        with n objects. V[r, i] expresses the membership degree of the object i to
+        with n objects. V[r, i] expresses the membership degree of the ith object to
         the rth cluster.
     
     adjusted : bool, default: False
@@ -33,6 +33,9 @@ def grand_index(U, V, adjusted=False):
         Similarity score of U and V. A score of 1 represents a perfect match.
         If adjusted is True, random solutions have a score close to 0.
     """
+    U = U.astype(np.double, copy=False)
+    V = V.astype(np.double, copy=False)
+    
     Ju, Su, Tu = _calculate_information_arrays(U)
     Jv, Sv, Tv = _calculate_information_arrays(V)
     Tmax = max(np.sum(Tu), np.sum(Tv))
@@ -45,10 +48,10 @@ def grand_index(U, V, adjusted=False):
     return (gri - gri_expectation) / (1.0 - gri_expectation)
 
 def _calculate_information_arrays(U):
-    ku, n = U.shape
+    k, n = U.shape
     i = np.triu_indices(n, 1)
     Ju = np.dot(U.T, U)[i]
-    Su = np.dot(U.T, np.dot(np.ones((ku, ku)) - np.identity(ku), U))[i]
+    Su = np.dot(U.T, np.dot(np.ones((k, k)) - np.identity(k), U))[i]
     return Ju, Su, Ju + Su
 
 def _calculate_gri(Ju, Su, Jv, Sv, Tmax):
@@ -63,14 +66,6 @@ def _calculate_gri_expectation(Ju, Su, Jv, Sv, Tmax):
 
 def _calculate_expectation(Ju, Jv):
     x, y = np.sort(Ju), np.sort(Jv)
-    expectation = 0.0
-    
-    for n in reversed(x):
-        count = np.count_nonzero(n <= y)
-        expectation += count * n
-    
-    for n in reversed(y):
-        count = np.count_nonzero(n < x)
-        expectation += count * n
-    
-    return expectation / len(Ju)
+    x_sum = sum(np.count_nonzero(n <= y) * n for n in x)
+    y_sum = sum(np.count_nonzero(n < x) * n for n in y)
+    return (x_sum + y_sum) / len(Ju)
