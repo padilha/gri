@@ -66,6 +66,20 @@ def _calculate_gri_expectation(Ju, Su, Jv, Sv, Tmax):
 
 def _calculate_expectation(Ju, Jv):
     x, y = np.sort(Ju), np.sort(Jv)
-    x_sum = sum(np.count_nonzero(n <= y) * n for n in x)
-    y_sum = sum(np.count_nonzero(n < x) * n for n in y)
-    return (x_sum + y_sum) / len(Ju)
+    m = len(Ju)
+
+    expectation = 0.0
+
+    j = m - 1
+    for i in reversed(xrange(m)):
+        while j >= 0 and x[i] <= y[j]:
+            j -= 1        
+        expectation += (m - j - 1) * x[i]
+    
+    i = m - 1
+    for j in reversed(xrange(m)):
+        while i >= 0 and x[i] > y[j]:
+            i -= 1
+        expectation += (m - i - 1) * y[j]
+    
+    return expectation / m
