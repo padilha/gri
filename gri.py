@@ -45,10 +45,10 @@ def grand_index(u, v, adjusted=False):
         Similarity score of U and V. A score of 1 represents a perfect match.
         If adjusted is True, random solutions have a score close to 0.
     """
-    assert u.shape[1] == v.shape[1]
-    
     u = u.astype(np.double, copy=True)
-    v = v.astype(np.double, copy=True)
+    v = v.astype(np.double, copy=True)    
+    
+    _validate_parameters(u, v)
     
     ju, su, tu = _calculate_information_arrays(u)
     jv, sv, tv = _calculate_information_arrays(v)
@@ -97,3 +97,10 @@ def _calculate_expectation(ju, jv):
         expectation += (m - i - 1) * y[j]
     
     return expectation / m
+
+def _validate_parameters(u, v):
+    if u.shape[1] != v.shape[1]:
+        raise ValueError("arrays 'u' and 'v' must have the same number of columns")
+    
+    if np.any(u < 0.0) or np.any(u > 1.0) or np.any(v < 0.0) or np.any(v > 1.0):
+        raise ValueError("all elements from 'u' and 'v' must assume values between 0.0 or 1.0")
