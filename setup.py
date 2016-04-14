@@ -11,5 +11,5 @@ setup(name='gri',
       author='Victor Alexandre Padilha',
       author_email='victorpadilha.cc@gmail.com',
       url='https://github.com/padilha/gri',
-      py_modules='gri',
+      py_modules=['gri'],
       install_requires=['numpy'])
