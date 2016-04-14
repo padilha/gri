@@ -1,11 +1,23 @@
+"""Grand Index (13GRI) and Adjusted Grand Index (13AGRI).
+
+Author : Victor Alexandre Padilha <victorpadilha.cc@gmail.com>
+License: BSD 3-Clause
+"""
+
 import numpy as np
 
-def grand_index(U, V, adjusted=False):
+__version__ = '1.0'
+
+def grand_index(u, v, adjusted=False):
     """
     Grand Index (13GRI) and Adjusted Grand Index (13AGRI) implementations.
     
     These measures are capable of comparing exclusive hard, fuzzy/probabilistic,
-    non-exclusive hard, and possibilistic clusterings.
+    non-exclusive hard, and possibilistic clustering solutions.
+    
+    Variable names used in this implementation directly follow the notations used
+    in the original paper of the indices. For more information, you should check
+    the reference.
     
     Reference
     ---------
@@ -14,14 +26,14 @@ def grand_index(U, V, adjusted=False):
     
     Parameters
     ----------
-    U : numpy.ndarray
-        k x n matrix representing a clustering solution with k clusters for a dataset
-        with n objects. U[r, i] expresses the membership degree of the ith object to
+    u : numpy.ndarray
+        k x n array representing a clustering solution with k clusters for a dataset
+        with n objects. u[r, i] expresses the membership degree of the ith object to
         the rth cluster.
     
-    V : numpy.ndarray
-        l x n matrix representing a clustering solution with l clusters for a dataset
-        with n objects. V[r, i] expresses the membership degree of the ith object to
+    v : numpy.ndarray
+        l x n array representing a clustering solution with l clusters for a dataset
+        with n objects. v[r, i] expresses the membership degree of the ith object to
         the rth cluster.
     
     adjusted : bool, default: False
@@ -33,40 +45,42 @@ def grand_index(U, V, adjusted=False):
         Similarity score of U and V. A score of 1 represents a perfect match.
         If adjusted is True, random solutions have a score close to 0.
     """
-    U = U.astype(np.double, copy=False)
-    V = V.astype(np.double, copy=False)
+    assert u.shape[1] == v.shape[1]
     
-    Ju, Su, Tu = _calculate_information_arrays(U)
-    Jv, Sv, Tv = _calculate_information_arrays(V)
-    Tmax = max(np.sum(Tu), np.sum(Tv))
-    gri = _calculate_gri(Ju, Su, Jv, Sv, Tmax)
+    u = u.astype(np.double, copy=True)
+    v = v.astype(np.double, copy=True)
+    
+    ju, su, tu = _calculate_information_arrays(u)
+    jv, sv, tv = _calculate_information_arrays(v)
+    tmax = max(np.sum(tu), np.sum(tv))
+    gri = _calculate_gri(ju, su, jv, sv, tmax)
 
     if not adjusted:
         return gri
 
-    gri_expectation = _calculate_gri_expectation(Ju, Su, Jv, Sv, Tmax)
+    gri_expectation = _calculate_gri_expectation(ju, su, jv, sv, tmax)
     return (gri - gri_expectation) / (1.0 - gri_expectation)
 
-def _calculate_information_arrays(U):
-    k, n = U.shape
+def _calculate_information_arrays(u):
+    k, n = u.shape
     i = np.triu_indices(n, 1)
-    Ju = np.dot(U.T, U)[i]
-    Su = np.dot(U.T, np.dot(np.ones((k, k)) - np.identity(k), U))[i]
-    return Ju, Su, Ju + Su
+    ju = np.dot(u.T, u)[i]
+    su = np.dot(u.T, np.dot(np.ones((k, k)) - np.identity(k), u))[i]
+    return ju, su, ju + su
 
-def _calculate_gri(Ju, Su, Jv, Sv, Tmax):
-    a = np.sum(np.minimum(Ju, Jv))
-    d = np.sum(np.minimum(Su, Sv))
-    return (a + d) / Tmax
+def _calculate_gri(ju, su, jv, sv, tmax):
+    a = np.sum(np.minimum(ju, jv))
+    d = np.sum(np.minimum(su, sv))
+    return (a + d) / tmax
 
-def _calculate_gri_expectation(Ju, Su, Jv, Sv, Tmax):
-    a_expectation = _calculate_expectation(Ju, Jv)
-    d_expectation = _calculate_expectation(Su, Sv)
-    return (a_expectation + d_expectation) / Tmax
+def _calculate_gri_expectation(ju, su, jv, sv, tmax):
+    a_expectation = _calculate_expectation(ju, jv)
+    d_expectation = _calculate_expectation(su, sv)
+    return (a_expectation + d_expectation) / tmax
 
-def _calculate_expectation(Ju, Jv):
-    x, y = np.sort(Ju), np.sort(Jv)
-    m = len(Ju)
+def _calculate_expectation(ju, jv):
+    x, y = np.sort(ju), np.sort(jv)
+    m = len(ju)
 
     expectation = 0.0
 
