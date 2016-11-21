@@ -43,7 +43,7 @@ def grand_index(u, v, adjusted=False):
     -------
     gri : float
         Similarity score of U and V. A score of 1 represents a perfect match.
-        If adjusted is True, random solutions have a score close to 0.
+        If adjusted is True, random solutions are expected to achieve a score close to 0.
     """
     u = u.astype(np.double, copy=True)
     v = v.astype(np.double, copy=True)    
