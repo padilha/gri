@@ -18,6 +18,6 @@ User installation
 
     python setup.py install --user
 
-Reference
-=========
+13GRI and 13AGRI reference
+==========================
 Horta, D., and Campello, R. J. G. B. (2015). Comparing Hard and Overlapping Clusterings. Journal of Machine Learning Research, 16: 2949-2997.
